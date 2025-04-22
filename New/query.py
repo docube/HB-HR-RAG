@@ -1,6 +1,7 @@
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
 
+
 retriever = vectorstore.as_retriever()
 
 qa_chain = RetrievalQA.from_chain_type(
