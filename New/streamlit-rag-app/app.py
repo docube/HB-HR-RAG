@@ -82,6 +82,9 @@ with tab2:
 
             st.success("✅ Documents embedded successfully!")
 
+st.write("🔑 Loaded API Key (Preview 5 chars):", openai_api_key[:5] if openai_api_key else "❌ Not Loaded")
+
+
 # ---------- TAB 3: Query ----------
 with tab3:
     st.subheader("Ask Questions")
@@ -99,3 +102,6 @@ with tab3:
             result = qa_chain.run(query)
             st.write("📌 **Answer:**")
             st.info(result)
+
+st.write("🔑 Loaded API Key (Preview 5 chars):", openai_api_key[:5] if openai_api_key else "❌ Not Loaded")
+
