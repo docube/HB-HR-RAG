@@ -1,119 +1,101 @@
-# Create the full project scaffold for a Streamlit RAG app with 3 tabs:
-# 1. Upload multiple files
-# 2. Preprocess and create vectorstore
-# 3. Query using OpenAI LLM (RetrievalQA)
-
-# We'll create a single streamlit app with tabbed layout and explanations for OpenAI key setup
-
-scaffold_code = """
 import streamlit as st
-from io import StringIO
+from dotenv import load_dotenv
 import os
-
-# Langchain and OpenAI
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQA
-from langchain.vectorstores import FAISS
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.document_loaders import TextLoader
-from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
-
-import PyPDF2
+from PyPDF2 import PdfReader
 import docx
+import tempfile
 
-st.set_page_config(page_title="HB-HR RAG", layout="wide")
+# Load API Key
+load_dotenv()
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
-st.title("📄 HB-HR Document Q&A System")
+# Set up page config
+st.set_page_config(page_title="HB-HR RAG App", layout="wide")
+st.title("📂 HB-HR Retrieval-Augmented Generation (RAG) App")
 
-tab1, tab2, tab3 = st.tabs(["📤 Upload Files", "🔧 Preprocess & Embed", "💬 Ask Questions"])
-
-# Shared state
-if "docs" not in st.session_state:
-    st.session_state.docs = []
+# Initialize session state
 if "vectorstore" not in st.session_state:
     st.session_state.vectorstore = None
 
-# TAB 1: Upload Files
+# ---------- TAB 1: File Upload ----------
+with st.sidebar:
+    st.header("📁 Upload Files")
+    uploaded_files = st.file_uploader(
+        "Upload multiple documents",
+        type=["pdf", "docx", "txt"],
+        accept_multiple_files=True
+    )
+
+def read_file(file):
+    if file.name.endswith(".pdf"):
+        reader = PdfReader(file)
+        return "\n".join([page.extract_text() or "" for page in reader.pages])
+    elif file.name.endswith(".docx"):
+        doc = docx.Document(file)
+        return "\n".join([para.text for para in doc.paragraphs])
+    elif file.name.endswith(".txt"):
+        return file.read().decode("utf-8")
+    return ""
+
+tab1, tab2, tab3 = st.tabs(["📁 Upload", "🧠 Preprocess", "💬 Query"])
+
+# ---------- TAB 1: Upload ----------
 with tab1:
-    st.header("📤 Upload Multiple Documents")
-    uploaded_files = st.file_uploader("Upload your files (PDF, DOCX, TXT)", 
-                                      type=["pdf", "docx", "txt"], 
-                                      accept_multiple_files=True)
-
-    combined_text = ""
+    st.subheader("Upload Documents")
     if uploaded_files:
+        raw_texts = []
         for file in uploaded_files:
-            if file.type == "application/pdf":
-                reader = PyPDF2.PdfReader(file)
-                for page in reader.pages:
-                    combined_text += page.extract_text() + "\\n"
-            elif file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-                doc = docx.Document(file)
-                for para in doc.paragraphs:
-                    combined_text += para.text + "\\n"
-            elif file.type == "text/plain":
-                stringio = StringIO(file.getvalue().decode("utf-8"))
-                combined_text += stringio.read() + "\\n"
-        
-        st.session_state.raw_text = combined_text
-        st.success("✅ Files uploaded successfully!")
+            text = read_file(file)
+            raw_texts.append(text)
+        st.session_state.raw_text = "\n".join(raw_texts)
+        st.success(f"{len(uploaded_files)} document(s) uploaded and loaded!")
 
-# TAB 2: Preprocess and Embed
+# ---------- TAB 2: Preprocessing & Vector Store ----------
 with tab2:
-    st.header("🔧 Preprocess Text and Create Embeddings")
+    st.subheader("Preprocess & Embed")
 
-    if "raw_text" in st.session_state and st.session_state.raw_text:
-        st.subheader("📄 Raw Text Sample:")
-        st.text(st.session_state.raw_text[:1000])  # show only a sample
-        
-        if st.button("➡️ Preprocess and Embed"):
+    if st.button("🔍 Chunk + Embed"):
+        if "raw_text" not in st.session_state:
+            st.warning("Please upload documents first.")
+        else:
+            # Split into chunks
             text_splitter = CharacterTextSplitter(
-                separator="\\n",
+                separator="\n",
                 chunk_size=1000,
                 chunk_overlap=200,
                 length_function=len
             )
+            docs = text_splitter.split_documents(
+                [Document(page_content=st.session_state.raw_text)]
+            )
 
-            texts = text_splitter.split_text(st.session_state.raw_text)
-            docs = [Document(page_content=t) for t in texts]
-            st.session_state.docs = docs
+            # Create vector store
+            embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
+            vectorstore = FAISS.from_documents(docs, embeddings)
+            st.session_state.vectorstore = vectorstore
 
-            # OpenAI Embeddings
-            openai_api_key = st.secrets["OPENAI_API_KEY"] if "OPENAI_API_KEY" in st.secrets else os.getenv("OPENAI_API_KEY")
-            if not openai_api_key:
-                st.error("❌ Please set your OpenAI API key in .env or Streamlit Secrets.")
-            else:
-                embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
-                vectorstore = FAISS.from_documents(docs, embeddings)
-                st.session_state.vectorstore = vectorstore
-                vectorstore.save_local("vector_db")
-                st.success("✅ Documents embedded and vectorstore created!")
+            st.success("✅ Documents embedded successfully!")
 
-    else:
-        st.warning("⬅️ Please upload files first in the 'Upload' tab.")
-
-# TAB 3: Ask Questions
+# ---------- TAB 3: Query ----------
 with tab3:
-    st.header("💬 Ask Questions from Uploaded Documents")
-    query = st.text_input("Ask a question about your uploaded documents")
+    st.subheader("Ask Questions")
 
-    if query and st.session_state.vectorstore:
-        openai_api_key = st.secrets["OPENAI_API_KEY"] if "OPENAI_API_KEY" in st.secrets else os.getenv("OPENAI_API_KEY")
-        if not openai_api_key:
-            st.error("❌ Please set your OpenAI API key.")
-        else:
+    if st.session_state.vectorstore is None:
+        st.warning("Please embed your documents first.")
+    else:
+        query = st.text_input("Ask a question about your documents:")
+        if query:
+            llm = ChatOpenAI(temperature=0, openai_api_key=openai_api_key)
             qa_chain = RetrievalQA.from_chain_type(
-                llm=ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo", openai_api_key=openai_api_key),
-                chain_type="stuff",
-                retriever=st.session_state.vectorstore.as_retriever(),
+                llm=llm,
+                retriever=st.session_state.vectorstore.as_retriever()
             )
             result = qa_chain.run(query)
-            st.success("✅ Answer:")
-            st.write(result)
-    elif query:
-        st.warning("Please preprocess and embed your documents first.")
-"""
-
-scaffold_code
-
+            st.write("📌 **Answer:**")
+            st.info(result)
