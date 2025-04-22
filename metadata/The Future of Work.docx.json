@@ -1,0 +1,26 @@
+{
+    "filename": "The Future of Work.docx",
+    "file_type": "vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "document_type": "Article",
+    "uploader": "David Olawepo",
+    "employee_name": "David Olawepo",
+    "employee_role": "AI Developer",
+    "employee_department": "Desgin",
+    "upload_date": "2025-04-20 09:47:15",
+    "access_roles": [
+        "CEO",
+        "HR Head",
+        "Chief of Staff",
+        "Managers",
+        "Employee"
+    ],
+    "tags": [
+        "Articles",
+        "Brand & Comms",
+        "AI Team",
+        "AI in workplace",
+        "Future of Work."
+    ],
+    "summary": "An article for publication on the Company's blog, Social Media platforms, and Website.",
+    "confidentiality_level": "Low"
+}
