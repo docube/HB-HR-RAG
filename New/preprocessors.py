@@ -1,13 +1,9 @@
-from langchain.text_splitter import CharacterTextSplitter
-from langchain_core.documents import Document  # or from langchain.schema import Document
+# preprocessors.py
 
-def process_raw_text(raw_text):
-    doc = Document(page_content=raw_text)
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.schema import Document
 
-    text_splitter = CharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=100
-    )
-
-    docs = text_splitter.split_documents([doc])
+def preprocess(raw_text):
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    docs = text_splitter.split_documents([Document(page_content=raw_text)])
     return docs

@@ -1,35 +1,33 @@
-import streamlit as st
-from preprocessors import process_raw_text  # Import your function
+# uploader.py
 
-# Upload file
+import streamlit as st
+from preprocessors import preprocess
+from io import StringIO
+import docx
+import PyPDF2
+
+# File upload
 uploaded_file = st.file_uploader("Upload a document", type=["pdf", "docx", "txt"])
 
+raw_text = ""
+
 if uploaded_file is not None:
-    # Read file content based on type
-    file_type = uploaded_file.type
-
-    if file_type == "text/plain":
-        raw_text = uploaded_file.read().decode("utf-8")
-
-    elif file_type == "application/pdf":
-        import PyPDF2
-        reader = PyPDF2.PdfReader(uploaded_file)
-        raw_text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
-
-    elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        import docx
+    if uploaded_file.type == "application/pdf":
+        pdf_reader = PyPDF2.PdfReader(uploaded_file)
+        for page in pdf_reader.pages:
+            raw_text += page.extract_text()
+    elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
         doc = docx.Document(uploaded_file)
-        raw_text = "\n".join([para.text for para in doc.paragraphs])
+        for para in doc.paragraphs:
+            raw_text += para.text + "\n"
+    elif uploaded_file.type == "text/plain":
+        stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+        raw_text += stringio.read()
 
-    else:
-        st.error("Unsupported file type.")
-        raw_text = ""
+    st.success("File uploaded and text extracted!")
 
-    # Call preprocessing function
-    if raw_text:
-        docs = process_raw_text(raw_text)
+    # 👇 Call the preprocessor
+    docs = preprocess(raw_text)
 
-        # Optional: display chunks
-        st.write(f"Document split into {len(docs)} chunks:")
-        for i, doc in enumerate(docs):
-            st.write(f"Chunk {i+1}:\n{doc.page_content}")
+    st.write("✅ Document chunked into", len(docs), "chunks.")
+    st.write("📄 Example chunk:", docs[0].page_content)
