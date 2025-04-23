@@ -1,0 +1,24 @@
+{
+    "filename": "All Heckerbella's Policies.pdf",
+    "file_type": "pdf",
+    "document_type": "Company Policies",
+    "uploader": "David Olawepo",
+    "employee_name": "David Olawepo",
+    "employee_role": "AI Developer",
+    "employee_department": "AI Department",
+    "upload_date": "2025-04-22 19:00:17",
+    "access_roles": [
+        "CEO",
+        "HR Head",
+        "Chief of Staff",
+        "Managers",
+        "Employees"
+    ],
+    "tags": [
+        "All Heckerbella Policies",
+        "Policies",
+        "ethos"
+    ],
+    "summary": "Heckerbella LTD Policy",
+    "confidentiality_level": "Low"
+}
