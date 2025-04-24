@@ -69,8 +69,11 @@ def ingest_files():
             loader = PyPDFLoader(str(file_path))
         elif file_path.suffix == ".docx":
             loader = UnstructuredWordDocumentLoader(str(file_path))
-        else:
+        elif file_path.suffix == ".txt":
             loader = TextLoader(str(file_path))
+        else:
+            print(f"[INFO] ⚠️ Unsupported file type skipped: {file}")
+            continue
         docs = loader.load()
 
         # Attach metadata
