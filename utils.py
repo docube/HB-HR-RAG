@@ -55,7 +55,7 @@ def ingest_files():
 
     for file in os.listdir(UPLOADS_DIR):
         file_path = UPLOADS_DIR / file
-        if not file_path.suffix.lower() in {".pdf", ".txt"}:
+        if not file_path.suffix.lower() in {".pdf", ".txt", ".docx"}:
             log(f"⚠️ Unsupported file type skipped: {file}")
             continue
 
@@ -67,8 +67,12 @@ def ingest_files():
         # Load document
         if file_path.suffix == ".pdf":
             loader = PyPDFLoader(str(file_path))
-        else:
+        elif file_path.suffix == ".txt":
             loader = TextLoader(str(file_path))
+        elif file_path.suffix == ".docx":
+            loader = UnstructuredWordDocumentLoader(str(file_path))
+        else:
+            print(f"[INFO] ⚠️ Unsupported file type skipped: {file}")
         docs = loader.load()
 
         # Attach metadata
