@@ -1,29 +1,28 @@
-from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings
-from langchain.chains.question_answering import load_qa_chain
-from langchain_openai import ChatOpenAI
-from dotenv import load_dotenv
-load_dotenv()
+# query.py
 
-# Load the saved vector store
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain.chains.question_answering import load_qa_chain
+
+# Step 1: Load the vector store
 db = FAISS.load_local("vector_store", OpenAIEmbeddings(), allow_dangerous_deserialization=True)
 
-# Ask a question
+# Step 2: Ask a question
 query = "What does the HR policy say about leave days?"
 results = db.similarity_search(query, k=3)
 
-# Print the matched documents
+# Step 3: Show the matched documents
+print("\n📄 Top Matching Documents:")
 for doc in results:
+    print("\n---")
     print(doc.page_content)
     print("Metadata:", doc.metadata)
 
-# Load the LLM
+# Step 4: Use LLM to refine the answer
 llm = ChatOpenAI()
-
-# Load the QA chain with the LLM
 chain = load_qa_chain(llm, chain_type="stuff")
-
-# Generate the final answer
 answer = chain.run(input_documents=results, question=query)
 
-print("Answer:", answer)
+# Step 5: Print the final answer
+print("\n🧠 Final Answer:")
+print(answer)
