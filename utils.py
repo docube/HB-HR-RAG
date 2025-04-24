@@ -12,6 +12,11 @@ from pathlib import Path
 UPLOADS_DIR = Path("uploads")
 VECTOR_DB_DIR = Path("vector_store")
 
+def load_file(filepath):
+    """Reads and returns plain text from a file path (used in simple workflows)."""
+    with open(filepath, "r", encoding="utf-8") as f:
+        return f.read()
+
 def ingest_files():
     all_docs = []
 
