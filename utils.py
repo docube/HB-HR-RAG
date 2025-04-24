@@ -4,7 +4,7 @@ import os
 import json
 import hashlib
 from pathlib import Path
-from langchain_community.document_loaders import PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -55,7 +55,7 @@ def ingest_files():
 
     for file in os.listdir(UPLOADS_DIR):
         file_path = UPLOADS_DIR / file
-        if not file_path.suffix.lower() in {".pdf", ".txt", ".docx"}:
+        if not file_path.suffix.lower() in {".pdf", ".txt",}:
             log(f"⚠️ Unsupported file type skipped: {file}")
             continue
 
@@ -65,15 +65,11 @@ def ingest_files():
             continue
 
         # Load document
-        if file.endswith(".pdf"):
+        if file_path.suffix == ".pdf":
             loader = PyPDFLoader(str(file_path))
-        elif file.endswith(".txt"):
-            loader = TextLoader(str(file_path))
-        elif file.endswith(".docx"):
-            loader = UnstructuredWordDocumentLoader(str(file_path))
         else:
-            print(f"[INFO] ⚠️ Unsupported file type skipped: {file}")
-            continue
+            loader = TextLoader(str(file_path))
+        docs = loader.load()
 
         # Attach metadata
         meta_path = file_path.with_suffix(file_path.suffix + ".json")
