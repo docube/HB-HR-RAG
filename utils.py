@@ -55,7 +55,7 @@ def ingest_files():
 
     for file in os.listdir(UPLOADS_DIR):
         file_path = UPLOADS_DIR / file
-        if not file_path.suffix.lower() in {".pdf", ".txt", "docx"}:
+        if not file_path.suffix.lower() in {".pdf", ".txt", ".docx"}:
             log(f"⚠️ Unsupported file type skipped: {file}")
             continue
 
