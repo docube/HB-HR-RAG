@@ -63,7 +63,7 @@ async def upload_file(
     return {"message": "File and metadata saved successfully."}
 
 @app.post("/ingest")
-def ingest_documents():
+def ingest_documents(): 
     ingest_files()
     return {"status": "success", "message": "All documents embedded and indexed"}
 
