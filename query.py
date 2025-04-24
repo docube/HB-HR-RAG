@@ -3,6 +3,8 @@
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.chains.question_answering import load_qa_chain
+from dotenv import load_dotenv
+load_dotenv()
 
 # Step 1: Load the vector store
 db = FAISS.load_local("vector_store", OpenAIEmbeddings(), allow_dangerous_deserialization=True)
