@@ -65,11 +65,11 @@ def ingest_files():
             continue
 
         # Load document
-        if file_path.suffix == ".pdf":
+        if file_path.suffix.lower == ".pdf":
             loader = PyPDFLoader(str(file_path))
-        elif file_path.suffix == ".docx":
+        elif file_path.suffix.lower == ".docx":
             loader = UnstructuredWordDocumentLoader(str(file_path))
-        elif file_path.suffix == ".txt":
+        elif file_path.suffix.lower == ".txt":
             loader = TextLoader(str(file_path))
         else:
             print(f"[INFO] ⚠️ Unsupported file type skipped: {file}")
