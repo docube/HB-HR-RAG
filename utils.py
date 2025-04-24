@@ -8,6 +8,9 @@ from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # Paths
 UPLOADS_DIR = Path("uploads")
