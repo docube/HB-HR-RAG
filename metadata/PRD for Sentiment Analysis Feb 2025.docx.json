@@ -1,0 +1,23 @@
+{
+    "filename": "PRD for Sentiment Analysis Feb 2025.docx",
+    "file_type": "vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "document_type": "PRD for Social Pulse",
+    "uploader": "David Olawepo",
+    "employee_name": "David Olawepo",
+    "employee_role": "AI Developer",
+    "employee_department": "AI Department",
+    "upload_date": "2025-04-24 18:14:21",
+    "access_roles": [
+        "CEO",
+        "Chief of Staff",
+        "HR Head",
+        "Managers"
+    ],
+    "tags": [
+        "PRD",
+        "Social Pulse",
+        "Sentiment Analysis"
+    ],
+    "summary": "PRD for Social Pulse, a sentiment analyzer for various sectors in Nigeria",
+    "confidentiality_level": "High"
+}

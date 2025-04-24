@@ -70,7 +70,7 @@ def ingest_files():
         elif file.endswith(".txt"):
             loader = TextLoader(str(file_path))
         elif file.endswith(".docx"):
-            loader = Docx2txtLoader(str(file_path))  # or Docx2txtLoader
+            loader = Docx2txtLoader(str(file_path))
         else:
             print(f"[WARN] Unsupported file type: {file}")
             continue
