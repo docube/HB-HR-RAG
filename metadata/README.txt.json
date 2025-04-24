@@ -1,0 +1,22 @@
+{
+    "filename": "README.txt",
+    "file_type": "plain",
+    "document_type": "Testing .txt files",
+    "uploader": "David Olawepo",
+    "employee_name": "David Olawepo",
+    "employee_role": "AI Developer",
+    "employee_department": "AI Department",
+    "upload_date": "2025-04-24 15:16:30",
+    "access_roles": [
+        "CEO",
+        "Managers",
+        "HR Heads",
+        "Employees",
+        "Chief of Staff"
+    ],
+    "tags": [
+        "testing .txt"
+    ],
+    "summary": ".txt files",
+    "confidentiality_level": "low"
+}
