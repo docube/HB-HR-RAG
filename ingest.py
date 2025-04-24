@@ -29,6 +29,8 @@ def ingest_files():
     embeddings = embed_texts(all_texts)
     save_faiss_index(embeddings, all_metadata)
 
+'''
 # 👇👇👇 Add this to allow running directly
 if __name__ == "__main__":
     ingest_files()
+'''
