@@ -10,7 +10,7 @@ load_dotenv()
 db = FAISS.load_local("vector_store", OpenAIEmbeddings(), allow_dangerous_deserialization=True)
 
 # Step 2: Ask a question
-query = "List the title of all documents I have in the database folder."
+query = "What is the future of Work?"
 results = db.similarity_search(query, k=3)
 
 # Step 3: Show the matched documents
